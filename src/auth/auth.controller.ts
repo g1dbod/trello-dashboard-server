@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto, SignUpDto } from './dto';
-import { ResUser, Tokens, jwtUser } from './types';
+import { ResUser, Tokens, UpdateUser, jwtUser } from './types';
 import { Request } from 'express';
 import { RtGuard } from 'src/commom/guards';
 import { Public } from 'src/commom/decorators';
@@ -45,6 +45,13 @@ export class AuthController {
   Auth(@Req() req: Request): Promise<{ user: jwtUser }> {
     const user = req.user;
     return this.authService.Auth(user['sub']);
+  }
+
+  @Post('update-user')
+  @HttpCode(HttpStatus.OK)
+  UpdateUser(@Req() req: Request, @Body() dto: UpdateUser) {
+    const user = req.user;
+    return this.authService.UpdateUser(user['sub'], dto);
   }
 
   @Public()

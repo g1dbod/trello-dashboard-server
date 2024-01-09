@@ -13,3 +13,8 @@ export type jwtUser = {
   name: string;
   image: string;
 };
+
+export type UpdateUser = {
+  name: string;
+  image: string;
+};

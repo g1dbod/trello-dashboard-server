@@ -6,7 +6,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignInDto, SignUpDto } from './dto';
 import * as bcrypt from 'bcrypt';
-import { ResUser, Tokens, jwtUser } from './types';
+import { ResUser, Tokens, UpdateUser, jwtUser } from './types';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -28,9 +28,8 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, hashedRt, ...newUser } = await this.prisma.user.create({
       data: {
-        email: dto.email,
+        ...dto,
         password: hash,
-        name: dto.name,
       },
     });
 
@@ -75,6 +74,24 @@ export class AuthService {
     const { password, hashedRt, ...user } = await this.prisma.user.findUnique({
       where: {
         id: userId,
+      },
+    });
+    if (!user) throw new ForbiddenException('Ошибка авторизации');
+
+    return { user };
+  }
+
+  async UpdateUser(
+    userId: string,
+    editUser: UpdateUser,
+  ): Promise<{ user: jwtUser }> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, hashedRt, ...user } = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        ...editUser,
       },
     });
     if (!user) throw new ForbiddenException('Ошибка авторизации');
